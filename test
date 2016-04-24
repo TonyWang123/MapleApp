@@ -1,0 +1,10 @@
+#!/bin/bash
+
+mvn clean install
+mkdir target/temp
+cp target/mapleclient-0.0.1-SNAPSHOT.jar target/temp
+cp target/mina-filter-compression-2.0.4.jar target/temp
+cp target/mina-core-2.0.4.jar target/temp
+cp target/slf4j-api-1.6.1.jar target/temp
+java -jar target/Phosphor-0.0.2-SNAPSHOT.jar -controlTrack -multiTaint target/temp target/inst
+/Users/tony/code/phosphor/Phosphor/target/jre-inst-implicit/jre/bin/java -Xbootclasspath/a:target/Phosphor-0.0.2-SNAPSHOT.jar -cp "target/inst/mapleclient-0.0.1-SNAPSHOT.jar:target/inst" $1
