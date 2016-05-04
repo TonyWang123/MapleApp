@@ -1,11 +1,15 @@
 package com.snlab.maple.mapleclient.api;
 
 import com.snlab.maple.mapleclinet.core.Action;
+import com.snlab.maple.mapleclinet.core.MapleCore;
 import com.snlab.maple.mapleclinet.core.MapleSystem;
 
-public interface MapleApp {
+public abstract class MapleApp {
 	
-	public static MapleSystem ms = new MapleSystem();
+	private MapleCore mc;
 
-	public Action onPacket(Packet p);
+	public MapleSystem ms;
+	
+	abstract public Action onPacket(Packet p);
+	
 }

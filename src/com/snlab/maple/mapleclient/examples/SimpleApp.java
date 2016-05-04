@@ -12,7 +12,7 @@ import com.snlab.maple.mapleclinet.core.Action;
 import com.snlab.maple.mapleclinet.core.MapleClient;
 import com.snlab.maple.mapleclinet.core.MapleConfig;
 
-public class SimpleApp implements MapleApp{
+public class SimpleApp extends MapleApp{
 
 	@Override
 	public Action onPacket(Packet p) {
@@ -22,7 +22,7 @@ public class SimpleApp implements MapleApp{
 		if(srcMac.equals(dstMac))return null;
 		System.out.println("sm != dm");
 		Identifier<Topology> topoRef = new ODLTopologyIdentifier();
-		Topology topo = MapleApp.ms.read(topoRef);
+		Topology topo = ms.read(topoRef);
 		System.out.println("get topology");
 		List<Link> links = topo.getLinks();
 		Link l1 = links.get(0);

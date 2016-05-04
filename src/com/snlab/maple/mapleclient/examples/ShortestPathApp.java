@@ -21,7 +21,7 @@ import com.snlab.maple.mapleclinet.core.MapleConfig;
 
 import edu.columbia.cs.psl.phosphor.runtime.MultiTainter;
 
-public class ShortestPathApp implements MapleApp {
+public class ShortestPathApp extends MapleApp {
 
 	private List<Link> bfs(Node root, String target, Map<String, List<Link>> myTopo) {
 		System.out.println("start bfs");
@@ -110,7 +110,7 @@ public class ShortestPathApp implements MapleApp {
 		String dst = p.getDstMac();
 		
 		Identifier<Topology> topoRef = new ODLTopologyIdentifier();
-		Topology topo = MapleApp.ms.read(topoRef);
+		Topology topo = ms.read(topoRef);
 		System.out.println("topo: get taint: " + MultiTainter.getTaint(topo));
 		List<Link> path = findShortestPath(src, dst, topo);
 		Action action = new Action();

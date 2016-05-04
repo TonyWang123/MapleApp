@@ -17,12 +17,12 @@ import com.snlab.maple.mapleclinet.core.MapleClient;
 import com.snlab.maple.mapleclinet.core.MapleConfig;
 
 
-public class MaxBandwidthApp implements MapleApp{
+public class MaxBandwidthApp extends MapleApp{
 
 	@Override
 	public Action onPacket(Packet p) {
 		Identifier<Topology> topoRef = new ODLTopologyIdentifier();
-		Topology topo = MapleApp.ms.read(topoRef);
+		Topology topo = ms.read(topoRef);
 		Queue<Link> queue = new PriorityQueue<Link>(10, new Comparator<Link>() {
             @Override
             public int compare(Link x, Link y) {

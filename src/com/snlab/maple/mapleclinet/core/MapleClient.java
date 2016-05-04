@@ -22,7 +22,7 @@ import com.snlab.maple.mapleclient.core.odl.ODLPacket;
 import edu.columbia.cs.psl.phosphor.runtime.MultiTainter;
 import edu.columbia.cs.psl.phosphor.runtime.Tainter;
 
-public class MapleClient {
+public class MapleClient {/////should implement maple datastore path interface
 	
 	String controllerAddress;
 	
@@ -31,13 +31,18 @@ public class MapleClient {
     IoConnector connector;
 	
 	IoSession session;
+	
+	MapleCore mc;
 
 	public void setup(MapleConfig conf){
 		controllerAddress = conf.getControllerAddress();
+		mc = new MapleCore();////also setup the interface
 	}
 	
-	public void addMapleApp(MapleApp app){
-		this.app = app;
+	public void addMapleApp(MapleApp app){//////synchronize maple app and maple core
+		this.app = app;///maybe we don't use
+		app.ms = new MapleSystem(mc);
+		mc.setMapleApp(app);
 	}
 	
 	public void register(){
@@ -88,7 +93,7 @@ public class MapleClient {
 				String receivedMessage = message.toString();
 				if(receivedMessage.equals("ok")){
 					System.out.println("handling packet");
-					ODLPacket p = new ODLPacket();
+					ODLPacket p = new ODLPacket();////////connect to maple core
 					p.setSrcMac("m1");
 					p.setDstMac("m3");
 					Action action = app.onPacket(p);
