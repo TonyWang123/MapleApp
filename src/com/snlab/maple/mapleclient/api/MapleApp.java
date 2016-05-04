@@ -5,8 +5,6 @@ import com.snlab.maple.mapleclinet.core.MapleCore;
 import com.snlab.maple.mapleclinet.core.MapleSystem;
 
 public abstract class MapleApp {
-	
-	private MapleCore mc;
 
 	public MapleSystem ms;
 	
