@@ -47,7 +47,7 @@ public class ShortestPathApp extends MapleApp {
 			System.out.println("first node: " + first.getMac());
 			List<Link> nextLinks = myTopo.get(first.getMac());
 			for (Link link : nextLinks) {
-				Node nextNode = link.getDst();
+				Node nextNode = link.getDstNode();
 				System.out.println("next node: " + nextNode.getMac());
 				reversedMap.put(nextNode, link);
 				if (!alreadySeenNodes.contains(nextNode)) {
@@ -66,15 +66,15 @@ public class ShortestPathApp extends MapleApp {
 				break;
 		}
 		System.out.println("reversedMap size: " + reversedMap.size());
-		if(reversedMap.get(targetNode).getSrc().equals(root)){
+		if(reversedMap.get(targetNode).getSrcNode().equals(root)){
 			Link tempLink = reversedMap.get(targetNode);
 			path.add(tempLink);
 		}
-		while (!reversedMap.get(targetNode).getSrc().equals(root)) {
+		while (!reversedMap.get(targetNode).getSrcNode().equals(root)) {
 			System.out.println("checking reversedMap");
 			Link tempLink = reversedMap.get(targetNode);
 			path.add(tempLink);
-			targetNode = tempLink.getSrc();
+			targetNode = tempLink.getSrcNode();
 		}
 		return path;
 	}
@@ -85,7 +85,7 @@ public class ShortestPathApp extends MapleApp {
 		Map<String, List<Link>> myTopo = new HashMap<String, List<Link>>();
 		Node rootNode = null;
 		for (Link link : topo.getLinks()) {
-			Node srcNode = link.getSrc();
+			Node srcNode = link.getSrcNode();
 			String macAddress = srcNode.getMac();
 			if (macAddress.equals(src))
 				rootNode = srcNode;

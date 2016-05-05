@@ -1,17 +1,9 @@
 package com.snlab.maple.mapleclient.core.odl;
 
-import java.util.List;
-
 import com.snlab.maple.mapleclient.api.Node;
 import com.snlab.maple.mapleclient.api.Port;
 
-public class ODLNode implements Node{
-	
-	String mac;
-	
-	public void setMac(String mac){
-		this.mac = mac;
-	}
+public class ODLPort implements Port{
 
 	@Override
 	public int getID() {
@@ -20,13 +12,7 @@ public class ODLNode implements Node{
 	}
 
 	@Override
-	public String getMac() {
-		// TODO Auto-generated method stub
-		return mac;
-	}
-
-	@Override
-	public List<Port> getPorts() {
+	public Node getNode() {
 		// TODO Auto-generated method stub
 		return null;
 	}

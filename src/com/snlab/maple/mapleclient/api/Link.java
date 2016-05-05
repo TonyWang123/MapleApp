@@ -4,9 +4,13 @@ public interface Link {
 
 	public int getID();
 	
-	public Node getSrc();
+	public Node getSrcNode();
 	
-	public Node getDst();
+	public Node getDstNode();
+	
+	public Port getSrcPort();
+	
+	public Port getDstPort();
 	
 	public int getBandwidth();
 }

@@ -17,12 +17,17 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import com.snlab.maple.mapleclient.api.Link;
 import com.snlab.maple.mapleclient.api.MapleApp;
 import com.snlab.maple.mapleclient.api.Packet;
+import com.snlab.maple.mapleclient.api.Port;
 import com.snlab.maple.mapleclient.core.odl.ODLPacket;
+import com.snlab.maple.mapleclinet.core.tracetree.Action;
+import com.snlab.maple.mapleclinet.core.tracetree.Match;
+import com.snlab.maple.mapleclinet.core.tracetree.Rule;
+import com.snlab.maple.mapleclinet.core.tracetree.TraceTree;
 
 import edu.columbia.cs.psl.phosphor.runtime.MultiTainter;
 import edu.columbia.cs.psl.phosphor.runtime.Tainter;
 
-public class MapleClient {/////should implement maple datastore path interface
+public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{/////should implement maple datastore path interface
 	
 	String controllerAddress;
 	
@@ -36,7 +41,7 @@ public class MapleClient {/////should implement maple datastore path interface
 
 	public void setup(MapleConfig conf){
 		controllerAddress = conf.getControllerAddress();
-		mc = new MapleCore();////also setup the interface
+		mc = new MapleCore(this, this);////also setup the interface
 	}
 	
 	public void addMapleApp(MapleApp app){//////synchronize maple app and maple core
@@ -123,5 +128,59 @@ public class MapleClient {/////should implement maple datastore path interface
 		} catch (RuntimeIoException e) {
 			System.out.println(e.getMessage());
 		}
+	}
+
+	@Override
+	public Object readData(String xpath) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void writeData(String xpath, Object data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void writeTraceTree(TraceTree traceTree) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sendPacket(byte[] payload, Port ingress, Action action) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void installPath(Action action, Match match, Integer priority) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deletePath(Action action, Match match, Integer priority) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void installRule(Rule r, Port sw) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteRule(Rule r, Port sw) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMapleCore(MapleCore mapleCore) {
+		// TODO Auto-generated method stub
+		
 	}
 }

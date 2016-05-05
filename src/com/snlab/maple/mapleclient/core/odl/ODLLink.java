@@ -2,6 +2,7 @@ package com.snlab.maple.mapleclient.core.odl;
 
 import com.snlab.maple.mapleclient.api.Link;
 import com.snlab.maple.mapleclient.api.Node;
+import com.snlab.maple.mapleclient.api.Port;
 
 public class ODLLink implements Link{
 	
@@ -41,15 +42,27 @@ public class ODLLink implements Link{
 	}
 
 	@Override
-	public Node getSrc() {
+	public Node getSrcNode() {
 		// TODO Auto-generated method stub
 		return src;
 	}
 
 	@Override
-	public Node getDst() {
+	public Node getDstNode() {
 		// TODO Auto-generated method stub
 		return dst;
+	}
+
+	@Override
+	public Port getSrcPort() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Port getDstPort() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
