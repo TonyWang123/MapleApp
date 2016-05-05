@@ -9,18 +9,18 @@ import java.util.Queue;
 import com.snlab.maple.mapleclient.api.Identifier;
 import com.snlab.maple.mapleclient.api.Link;
 import com.snlab.maple.mapleclient.api.MapleApp;
-import com.snlab.maple.mapleclient.api.Packet;
 import com.snlab.maple.mapleclient.api.Topology;
 import com.snlab.maple.mapleclient.core.odl.ODLTopologyIdentifier;
-import com.snlab.maple.mapleclinet.core.Action;
 import com.snlab.maple.mapleclinet.core.MapleClient;
 import com.snlab.maple.mapleclinet.core.MapleConfig;
+import com.snlab.maple.mapleclinet.core.tracetree.Action;
+import com.snlab.maple.mapleclinet.core.tracetree.MaplePacket;
 
 
 public class MaxBandwidthApp extends MapleApp{
 
 	@Override
-	public Action onPacket(Packet p) {
+	public Action onPacket(MaplePacket p) {
 		Identifier<Topology> topoRef = new ODLTopologyIdentifier();
 		Topology topo = ms.read(topoRef);
 		Queue<Link> queue = new PriorityQueue<Link>(10, new Comparator<Link>() {
@@ -37,7 +37,6 @@ public class MaxBandwidthApp extends MapleApp{
 		Action action = new Action();
 		List<Link> path = new LinkedList<Link>();
 		path.add(queue.poll());
-		action.setPath(path);
 		return action;
 	}
 	
@@ -50,5 +49,11 @@ public class MaxBandwidthApp extends MapleApp{
 		client.setup(conf);
 		client.addMapleApp(app);
 		client.register();
+	}
+
+	@Override
+	public void onDataChanged(Object data) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -12,12 +12,12 @@ import com.snlab.maple.mapleclient.api.Identifier;
 import com.snlab.maple.mapleclient.api.Link;
 import com.snlab.maple.mapleclient.api.MapleApp;
 import com.snlab.maple.mapleclient.api.Node;
-import com.snlab.maple.mapleclient.api.Packet;
 import com.snlab.maple.mapleclient.api.Topology;
 import com.snlab.maple.mapleclient.core.odl.ODLTopologyIdentifier;
-import com.snlab.maple.mapleclinet.core.Action;
 import com.snlab.maple.mapleclinet.core.MapleClient;
 import com.snlab.maple.mapleclinet.core.MapleConfig;
+import com.snlab.maple.mapleclinet.core.tracetree.Action;
+import com.snlab.maple.mapleclinet.core.tracetree.MaplePacket;
 
 import edu.columbia.cs.psl.phosphor.runtime.MultiTainter;
 
@@ -105,16 +105,15 @@ public class ShortestPathApp extends MapleApp {
 	}
 
 	@Override
-	public Action onPacket(Packet p) {
-		String src = p.getSrcMac();
-		String dst = p.getDstMac();
+	public Action onPacket(MaplePacket p) {
+		String src = String.valueOf(p.ethSrc());
+		String dst = String.valueOf(p.ethDst());
 		
 		Identifier<Topology> topoRef = new ODLTopologyIdentifier();
 		Topology topo = ms.read(topoRef);
 		System.out.println("topo: get taint: " + MultiTainter.getTaint(topo));
 		List<Link> path = findShortestPath(src, dst, topo);
 		Action action = new Action();
-		action.setPath(path);
 		return action;
 	}
 
@@ -127,5 +126,11 @@ public class ShortestPathApp extends MapleApp {
 		client.setup(conf);
 		client.addMapleApp(app);
 		client.register();
+	}
+
+	@Override
+	public void onDataChanged(Object data) {
+		// TODO Auto-generated method stub
+		
 	}
 }

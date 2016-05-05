@@ -20,6 +20,7 @@ import com.snlab.maple.mapleclient.api.Packet;
 import com.snlab.maple.mapleclient.api.Port;
 import com.snlab.maple.mapleclient.core.odl.ODLPacket;
 import com.snlab.maple.mapleclinet.core.tracetree.Action;
+import com.snlab.maple.mapleclinet.core.tracetree.MaplePacket;
 import com.snlab.maple.mapleclinet.core.tracetree.Match;
 import com.snlab.maple.mapleclinet.core.tracetree.Rule;
 import com.snlab.maple.mapleclinet.core.tracetree.TraceTree;
@@ -97,15 +98,7 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 				System.out.println("Received message " + message);
 				String receivedMessage = message.toString();
 				if(receivedMessage.equals("ok")){
-					System.out.println("handling packet");
-					ODLPacket p = new ODLPacket();////////connect to maple core
-					p.setSrcMac("m1");
-					p.setDstMac("m3");
-					Action action = app.onPacket(p);
-					if(action.path.isEmpty())System.out.println("path is empty");
-					for(Link link: action.path){
-						System.out.println("link taint: " + MultiTainter.getTaint(link));
-					}
+					
 				}else{
 					System.out.println("sth wrong");
 				}
