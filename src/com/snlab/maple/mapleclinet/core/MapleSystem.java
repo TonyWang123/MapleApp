@@ -16,6 +16,8 @@ public class MapleSystem implements MapleSystemAPI{
 	@Override
 	public <T> T read(Identifier<T> ref){
 		if(ref instanceof ODLTopologyIdentifier){
+			mc.readData("/root/network-topology/topology");///need to convert
+			System.out.println("read topology");
 			return (T) new ODLTopology();
 		}
 		return null;

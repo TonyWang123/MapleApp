@@ -47,11 +47,20 @@ public class V extends Node {
           subtree.put(next.value, child);
           child.augment(trace, action);
         }
-        else {
-          V child = new V();
+        else if(trace.get(0) instanceof TraceItemV){
+            V child = new V();
+            child.father = this;
+            subtree.put(next.value, child);
+            child.augment(trace, action);
+          }
+        else if(trace.get(0) instanceof TraceItemD){
+          D child = new D();
           child.father = this;
           subtree.put(next.value, child);
           child.augment(trace, action);
+        }
+        else{
+        	System.out.println("V error");
         }
       }
     }

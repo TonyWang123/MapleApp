@@ -23,4 +23,9 @@ public class L extends Node {
   public void augment(List<TraceItem> trace, Action action) {
     //Should NEVER be used
   }
+  
+  public boolean dependOn(String dataType){
+	  if(action.accessDataSet.contains(dataType))return true;
+	  else return false;
+  }
 }

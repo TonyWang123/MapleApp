@@ -7,7 +7,9 @@
  */
 package com.snlab.maple.mapleclinet.core.tracetree;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.snlab.maple.mapleclient.api.Link;
 import com.snlab.maple.mapleclient.api.Port;
@@ -26,6 +28,8 @@ public class Action {
   public static Action ToPorts(int... portIDs) { return new ToPorts(portIDs); }
   public static Action Drop() { return drop; }
   public static Action Flood() { return flood; }
+  
+  public Set<String> accessDataSet = new HashSet<String>();
 
   public void disabled() {
     enable = false;

@@ -4,20 +4,25 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Set;
 
 import com.snlab.maple.mapleclient.api.MapleApp;
 import com.snlab.maple.mapleclient.api.Port;
 import com.snlab.maple.mapleclient.api.Topology;
 import com.snlab.maple.mapleclinet.core.packet.Ethernet;
 import com.snlab.maple.mapleclinet.core.tracetree.Action;
+import com.snlab.maple.mapleclinet.core.tracetree.D;
 import com.snlab.maple.mapleclinet.core.tracetree.Diff;
 import com.snlab.maple.mapleclinet.core.tracetree.MaplePacket;
 import com.snlab.maple.mapleclinet.core.tracetree.Node;
 import com.snlab.maple.mapleclinet.core.tracetree.Rule;
+import com.snlab.maple.mapleclinet.core.tracetree.T;
 import com.snlab.maple.mapleclinet.core.tracetree.TraceItem;
+import com.snlab.maple.mapleclinet.core.tracetree.TraceItemD;
 import com.snlab.maple.mapleclinet.core.tracetree.TraceItemV;
 import com.snlab.maple.mapleclinet.core.tracetree.TraceTree;
+import com.snlab.maple.mapleclinet.core.tracetree.V;
 
 public class MapleCore {
 
@@ -28,7 +33,7 @@ public class MapleCore {
 
     private MapleApp userApp;
     private TraceTree traceTree;
-    private HashSet<Node> data2Node;
+    //private HashSet<Node> data2Node;
     private MapleDataPathAdaptor mapleDataPathAdaptor;
     private MapleDataStoreAdaptor mapleDataStoreAdaptor;
 
@@ -47,7 +52,7 @@ public class MapleCore {
 
         traceTree = new TraceTree( this );
         oldRules = new LinkedList<Rule>();
-        data2Node = new HashSet<Node>();
+        //data2Node = new HashSet<Node>();
     }
 
     public void setMapleApp(MapleApp newApp) {
@@ -55,12 +60,12 @@ public class MapleCore {
 
         userApp = newApp;
         traceTree = new TraceTree( this );
-        data2Node = new HashSet<Node>();
+        //data2Node = new HashSet<Node>();
     }
 
-    public void mapNode2DataClass(Node node, Class<?> clazz) {
+    /*public void mapNode2DataClass(Node node, Class<?> clazz) {
     	if (!data2Node.contains(node)) data2Node.add(node);
-    	/*
+    	
     	System.out.println("mapNode2DataClass" + ((node instanceof V) ? "V" : "T"));
 
         List<Node> list = data2Node.get(clazz);
@@ -77,10 +82,57 @@ public class MapleCore {
             list.add(node);
             assert(data2Node.containsValue(list));
         }
-        */
+        
     }
-
+*/
     private boolean omitFlag = true;
+    
+    private String getTypeFromData(Object data){
+    	return "topology";
+    }
+    
+    private void traverseTraceTreeAndDelete(Node root, String dataType){
+    	if(root instanceof D){
+    		D d = (D)root;
+    		if(d.dataType.equals(dataType)){
+    			d.delete(null);//delete only one node
+    		}
+    	}else if(root instanceof T){
+    		T t = (T)root;
+    		for(Node n: t.subtree){
+    			traverseTraceTreeAndDelete(n, dataType);
+    		}
+    	}else if(root instanceof V){
+    		V v = (V)root;
+    		for(Map.Entry<String, Node> entry: v.subtree.entrySet()){
+    			Node n = entry.getValue();
+    			traverseTraceTreeAndDelete(n, dataType);
+    		}
+    	}
+    }
+    
+    static int i = 0;
+    
+    private void displayTraceTree(Node root){
+    	if(root instanceof D){
+    		D d = (D)root;
+    		System.out.println("d node" + i++);
+    		displayTraceTree(d.subtree);
+    	}else if(root instanceof T){
+    		T t = (T)root;
+    		System.out.println("t node" + i++);
+    		for(Node n: t.subtree){
+    			displayTraceTree(n);
+    		}
+    	}else if(root instanceof V){
+    		V v = (V)root;
+    		System.out.println("v node" + i++);
+    		for(Map.Entry<String, Node> entry: v.subtree.entrySet()){
+    			Node n = entry.getValue();
+    			displayTraceTree(n);
+    		}
+    	}
+    }
 
     public void onDataChanged(Object data) {
     	if (omitFlag) {
@@ -109,8 +161,16 @@ public class MapleCore {
         //traceTree.rootPointer.subtree[0].invalidate();
         //recompileTraceTree();
         /////////////////////////////////////////////////
-        this.traceTree = new TraceTree(this);
+        
+        traverseTraceTreeAndDelete(traceTree.rootPointer, getTypeFromData(data));
+        recompileTraceTree();
+        
+        
+        displayTraceTree(traceTree.rootPointer);
+        //this.traceTree = new TraceTree(this);
 
+        
+        
         /*
         List<Node> nodes = data2Node.get(Topology.class);
 
@@ -139,11 +199,12 @@ public class MapleCore {
     public void traceAdd(TraceItem traceItem) {
         traceItems.add(traceItem);
     }
-
+    
     public Object readData(String xpath) {
         if (xpath.equals("/root/network-topology/topology")) {
             Object data = mapleDataStoreAdaptor.readData(xpath);
-            traceItems.add(TraceItemV.topology()); //TODO: add to data2Node
+            //traceItems.add(TraceItemV.topology()); //TODO: add to data2Node
+            traceItems.add(TraceItemD.topology());
             return data;
         }
 
@@ -159,6 +220,7 @@ public class MapleCore {
         frame.deserialize(payload, 0, payload.length);
 
         traceItems = new ArrayList<TraceItem>();
+        
         MaplePacket maplePacket = new MaplePacket(frame, ingressPort, this);
         Action action = userApp.onPacket(maplePacket);
 
@@ -167,11 +229,12 @@ public class MapleCore {
 
             mapleDataStoreAdaptor.writeTraceTree(traceTree);
 
-            data2Node = new HashSet<Node>();
+            //data2Node = new HashSet<Node>();
             recompileTraceTree();
 
             mapleDataPathAdaptor.sendPacket(payload, ingressPort, action);
         }
+        displayTraceTree(traceTree.rootPointer);
     }
 
     private void recompileTraceTree() {

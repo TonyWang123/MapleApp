@@ -64,9 +64,9 @@ public class TraceTree {
     else if (t instanceof V) {
       //System.out.println("V Node: " + ((V) t).field.toString());
 
-      if (((V) t).field == TraceItem.Field.TOPOLOGY) {
+      /*if (((V) t).field == TraceItem.Field.TOPOLOGY) {
         mapleCore.mapNode2DataClass(t, Topology.class);
-      }
+      }*/
 
       Set<String> keys = ((V) t).subtree.keySet();
       Iterator<String> iterator = keys.iterator();
@@ -84,9 +84,9 @@ public class TraceTree {
     }
     else if (t instanceof T) { //TODO: if only contain NegativeBranch , add a virtual Rule
 
-      if (((T) t).field == TraceItem.Field.TOPOLOGY) {
+      /*if (((T) t).field == TraceItem.Field.TOPOLOGY) {
         mapleCore.mapNode2DataClass(t, Topology.class);
-      }
+      }*/
 
       Match m_neg = Match.matchAny();
       for (TraceItem item2 : match.fieldValues) {
@@ -113,9 +113,8 @@ public class TraceTree {
         build(((T) t).subtree[T.POS_BRANCH], m);
       }
     }
-    else {
-      // We should never reach here.
-      System.out.println("Error in building rules: Unknown type of node in TT.");
+    else if(t instanceof D){
+        build(((D) t).subtree, match);
     }
   }
 
@@ -128,9 +127,13 @@ public class TraceTree {
       treeRoot.augment(trace, action);
       return treeRoot;
     }
-    else {
+    else if(trace.get(0) instanceof TraceItemV){
       V treeRoot = new V();
       treeRoot.augment(trace, action); //trace.get(0) instanceof TraceItemV
+      return treeRoot;
+    }else{
+      D treeRoot = new D();
+      treeRoot.augment(trace, action);
       return treeRoot;
     }
   }

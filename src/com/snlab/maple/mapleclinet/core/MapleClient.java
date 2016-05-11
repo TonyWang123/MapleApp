@@ -10,20 +10,30 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactory;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snlab.maple.mapleclient.api.Link;
 import com.snlab.maple.mapleclient.api.MapleApp;
 import com.snlab.maple.mapleclient.api.Packet;
 import com.snlab.maple.mapleclient.api.Port;
+import com.snlab.maple.mapleclient.api.Topology;
 import com.snlab.maple.mapleclient.core.odl.ODLPacket;
+import com.snlab.maple.mapleclient.core.odl.ODLPort;
+import com.snlab.maple.mapleclient.core.odl.ODLTopology;
+import com.snlab.maple.mapleclinet.core.packet.Ethernet;
 import com.snlab.maple.mapleclinet.core.tracetree.Action;
 import com.snlab.maple.mapleclinet.core.tracetree.MaplePacket;
 import com.snlab.maple.mapleclinet.core.tracetree.Match;
 import com.snlab.maple.mapleclinet.core.tracetree.Rule;
 import com.snlab.maple.mapleclinet.core.tracetree.TraceTree;
+import com.snlab.mapleserver.message.ActionType;
+import com.snlab.mapleserver.message.Message;
+import com.snlab.mapleserver.message.MessageType;
 
 import edu.columbia.cs.psl.phosphor.runtime.MultiTainter;
 import edu.columbia.cs.psl.phosphor.runtime.Tainter;
@@ -39,6 +49,8 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 	IoSession session;
 	
 	MapleCore mc;
+	
+	static ObjectMapper mapper = new ObjectMapper();
 
 	public void setup(MapleConfig conf){
 		controllerAddress = conf.getControllerAddress();
@@ -51,9 +63,30 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 		mc.setMapleApp(app);
 	}
 	
+	private void sendRegMsg(){
+		Message msg = new Message();
+		msg.setType(MessageType.REG);
+		try {
+			session.write(mapper.writeValueAsString(msg));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void test(){
+		String data = "////////gg8OA1hWCAYAAQgABgQAAYIPDgNYVgoAAAEAAAAAAAAKAAAC";
+		Port ingress = new ODLPort();
+		mc.onPacket(data.getBytes(), ingress);
+		System.out.println("data change");
+		Topology topo = new ODLTopology();
+		mc.onDataChanged(topo);
+		mc.onDataChanged(topo);
+	}
+	
 	public void register(){
 		connect();
-		session.write("register");
+		sendRegMsg();
 	}
 	
 	public void close(){
@@ -67,7 +100,10 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 		
 		connector.getFilterChain().addLast("logger", new LoggingFilter());
 		connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory(Charset.forName("UTF-8"))));
-		
+        
+        //connector.getFilterChain().addLast("logger", new LoggingFilter());  
+        //connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
+        
         connector.setHandler(new IoHandlerAdapter() {
 			
 			@Override
@@ -95,12 +131,22 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 
 			@Override
 			public void messageReceived(IoSession session, Object message) throws Exception {
-				System.out.println("Received message " + message);
-				String receivedMessage = message.toString();
-				if(receivedMessage.equals("ok")){
-					
-				}else{
-					System.out.println("sth wrong");
+				ObjectMapper mapper = new ObjectMapper();
+				Message msg = null;
+				try{
+					msg = mapper.readValue(message.toString(), Message.class);
+				}catch(Exception e){
+					System.out.println(e.getMessage());
+				}
+				if(msg.getType() == MessageType.PKT_IN){
+					System.out.println("packet in");
+					Message outMsg = new Message();
+					com.snlab.mapleserver.message.Action action = new com.snlab.mapleserver.message.Action();
+					action.setType(ActionType.FORWARD);
+					outMsg.setAction(action);
+					outMsg.setData(msg.getData());
+					outMsg.setType(MessageType.PKT_OUT);
+					session.write(mapper.writeValueAsString(outMsg));
 				}
 			}
 
@@ -150,13 +196,17 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 	@Override
 	public void installPath(Action action, Match match, Integer priority) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("install path");
+		System.out.println(action.toString());
+		System.out.println(match.toString());
 	}
 
 	@Override
 	public void deletePath(Action action, Match match, Integer priority) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("delete path");
+		System.out.println(action.toString());
+		System.out.println(match.toString());
 	}
 
 	@Override
@@ -175,5 +225,13 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 	public void setMapleCore(MapleCore mapleCore) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public static void main(String[] args){
+		MapleClient mc = new MapleClient();
+		MapleConfig conf = new MapleConfig();
+		conf.setControllerAddress("localhost");
+		mc.setup(conf);
+		mc.register();
 	}
 }

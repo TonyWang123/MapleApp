@@ -62,6 +62,12 @@ public class T extends Node {
           subtree[next.Tvalue ? POS_BRANCH : NEG_BRANCH] = child;
           child.augment(trace, action);
         }
+        else if(trace.get(0) instanceof TraceItemD){
+        	D child = new D();
+        	child.father = this;
+        	subtree[next.Tvalue ? POS_BRANCH : NEG_BRANCH] = child;
+        	child.augment(trace, action);
+        }
         else {
           //FIXME:TODO: Replace println with a uniform LOG module.
           System.out.println("Error in T.augment: Unknown type of TraceItem.");
