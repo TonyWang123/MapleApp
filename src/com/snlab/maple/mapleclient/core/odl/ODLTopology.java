@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.snlab.maple.mapleclient.api.Link;
 import com.snlab.maple.mapleclient.api.Node;
+import com.snlab.maple.mapleclient.api.Port;
 import com.snlab.maple.mapleclient.api.Topology;
 
 import edu.columbia.cs.psl.phosphor.runtime.MultiTainter;
@@ -12,6 +13,14 @@ import edu.columbia.cs.psl.phosphor.runtime.Taint;
 import edu.columbia.cs.psl.phosphor.runtime.Tainter;
 
 public class ODLTopology implements Topology{
+	
+	List<Link> links;
+	
+	List<Node> nodes;
+	
+	List<Port> ports;
+	
+	
 
 	@Override
 	public List<Link> getLinks() {

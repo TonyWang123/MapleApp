@@ -13,6 +13,16 @@ public class Message{
 	private Action action;
 	
 	private Map<Integer, String> match;
+	
+	private KeyValueObject keyValueObject;
+
+	public KeyValueObject getKeyValueObject() {
+		return keyValueObject;
+	}
+
+	public void setKeyValueObject(KeyValueObject keyValueObject) {
+		this.keyValueObject = keyValueObject;
+	}
 
 	public Map<Integer, String> getMatch() {
 		return match;

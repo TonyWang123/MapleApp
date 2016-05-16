@@ -6,4 +6,5 @@ public class MessageType {
 	public final static int PKT_OUT = 2;
 	public final static int ACTION = 3;
 	public final static int REG = 4;
+	public final static int OBJECT = 5;
 }

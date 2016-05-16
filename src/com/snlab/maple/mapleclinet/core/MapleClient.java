@@ -32,6 +32,7 @@ import com.snlab.maple.mapleclinet.core.tracetree.Match;
 import com.snlab.maple.mapleclinet.core.tracetree.Rule;
 import com.snlab.maple.mapleclinet.core.tracetree.TraceTree;
 import com.snlab.mapleserver.message.ActionType;
+import com.snlab.mapleserver.message.KeyValueObject;
 import com.snlab.mapleserver.message.Message;
 import com.snlab.mapleserver.message.MessageType;
 
@@ -147,6 +148,12 @@ public class MapleClient implements MapleDataPathAdaptor, MapleDataStoreAdaptor{
 					outMsg.setData(msg.getData());
 					outMsg.setType(MessageType.PKT_OUT);
 					session.write(mapper.writeValueAsString(outMsg));
+				}else if(msg.getType() == MessageType.OBJECT){
+					KeyValueObject object = msg.getKeyValueObject();
+					String type = object.getType();
+					if(type.equals("topology")){
+						System.out.println("deal with topology");
+					}
 				}
 			}
 
